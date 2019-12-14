@@ -122,7 +122,7 @@ enum MENU_TYPE {
 };
 
 
-print_menu(int position, MENU_TYPE menu_type) {
+void print_menu(int position, MENU_TYPE menu_type) {
 	char new_game[50];
 	char load[50];
 	char save[50];
