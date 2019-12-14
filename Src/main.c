@@ -143,7 +143,6 @@ print_menu(int position, MENU_TYPE menu_type) {
 			oled_WriteString(save, Font_7x10, White);
 			oled_SetCursor(0, 45);
 			oled_WriteString(settings, Font_7x10, White);
-			oled_UpdateScreen();
 			break;
 		case LOAD:
 		case SAVE:
@@ -153,6 +152,7 @@ print_menu(int position, MENU_TYPE menu_type) {
 			oled_SetCursor(0, 0);
 			oled_WriteString("Wrong menu type", Font_7x10, White);
 	}
+	oled_UpdateScreen();
 }
 
 
@@ -178,8 +178,6 @@ uint8_t read_symbol(uint8_t row) {
 }
 
 enum KEY get_key() {
-
-
 	uint8_t symbol = read_symbol(0);
 	if (symbol == ONE) {
 		return ONE;
