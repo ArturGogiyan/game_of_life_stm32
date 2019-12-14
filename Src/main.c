@@ -369,11 +369,18 @@ void write_line(uint8_t* str) {
 }
 
 enum key {
-	UP = 94,
-	LEFT = 109,
-	DOWN = 91,
-	RIGHT = 61,
-	CENTER = 93,
+	ONE = 110,
+	TWO = 94,
+	THREE = 62,
+	FOUR = 109,
+	FIVE = 93,
+	SIX = 61,
+	SEVEN = 107,
+	EIGHT = 91,
+	NINE = 59,
+	TEN = 103,
+	ELEVEN = 87,
+	TWELVE = 55,
 	NONE = 0
 };
 
@@ -401,29 +408,50 @@ uint8_t read_symbol(uint8_t row) {
 enum key get_key() {
 
 
-
-	if (read_symbol(0) == UP) {
-		return UP;
+	uint8_t symbol = read_symbol(0);
+	if (symbol == ONE) {
+		return ONE;
+	}
+	if (symbol == TWO) {
+		return TWO;
+	}
+	if (symbol == THREE) {
+		return THREE;
 	}
 
-	uint8_t symbol = read_symbol(1);
-	if (symbol == LEFT) {
-		return LEFT;
+	symbol = read_symbol(1);
+	if (symbol == FOUR) {
+		return FOUR;
 	}
-	if (symbol == CENTER) {
-		return CENTER;
+	if (symbol == FIVE) {
+		return FIVE;
 	}
-	if (symbol == RIGHT) {
-		return RIGHT;
-	}
-
-
-
-
-	if (read_symbol(2) == DOWN) {
-		return DOWN;
+	if (symbol == SIX) {
+		return SIX;
 	}
 
+
+	symbol = read_symbol(2);
+	if (symbol == SEVEN) {
+		return SEVEN;
+	}
+	if (symbol == EIGHT) {
+		return EIGHT;
+	}
+	if (symbol == NINE) {
+		return NINE;
+	}
+
+	symbol = read_symbol(3);
+	if (symbol == TEN) {
+		return TEN;
+	}
+	if (symbol == ELEVEN) {
+		return ELEVEN;
+	}
+	if (symbol == TWELVE) {
+		return TWELVE;
+	}
 	return NONE;
 }
 
@@ -485,28 +513,7 @@ int main(void) {
 //		}
 
 		 HAL_Delay(100);
-			  enum key current_key = get_key();
-			  switch(current_key) {
-			  case UP:
-				  write_line("UP");
-				  break;
-			  case LEFT:
-				  write_line("LEFT");
-				  break;
-			  case RIGHT:
-				  write_line("RIGHT");
-				  break;
-			  case CENTER:
-				  write_line("POBEDA");
-				  break;
-			  case DOWN:
-				  write_line("DOWN");
-				  break;
-			  case NONE:
-				  write_line("NONE");
-				  break;
-			  }
-
+		 enum key current_key = get_key();
 		/*
 			  uint8_t symbol = read_symbol();
 			  	  	  if (symbol == 's' || symbol == 'c' || symbol == 't') {
