@@ -26,6 +26,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "string.h"
+#include "game.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
