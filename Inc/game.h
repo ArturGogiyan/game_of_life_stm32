@@ -3,16 +3,18 @@
 
 /*
  * L_CELL must be greater than D_CELL
- * else you must rewrite calc_step() in field.c
+ * else you must rewrite calc_step() in game.c
+ * 
  */
 #define D_CELL 32 /*dead cell (ascii space)*/
-#define L_CELL 35 /*living cell (ascii #)*/ 
+#define L_CELL 35 /*living cell (ascii #)*/
 
-// todo: configure this
-#define WIDTH 64
-#define HEIGHT 32
+// display is 128x64, and one cell is 4x4 so..
+#define WIDTH 32
+#define HEIGHT 16
 
-typedef struct {
+typedef struct
+{
 	char plane[HEIGHT][WIDTH];
 	char buff[HEIGHT][WIDTH];
 	int n;
@@ -20,9 +22,9 @@ typedef struct {
 } field_t;
 
 /* initializer */
-void init_field(field_t* field, int n, int m);
+void init_field(field_t *field, int n, int m);
 
 /* funcs */
-void calc_step(field_t* field);
+void calc_step(field_t *field);
 
 #endif

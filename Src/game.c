@@ -7,6 +7,7 @@ static void init_plane(field_t *field)
         for (int j = 0; j < field->m; ++j)
         {
             field->plane[i][j] = D_CELL;
+            field->buff[i][j] = D_CELL;
         }
     }
 }
@@ -24,7 +25,7 @@ static void swap_planes(field_t *field)
     }
 }
 
-void init_field(field_t* field, int n, int m)
+void init_field(field_t *field, int n, int m)
 {
     field->n = n;
     field->m = m;
