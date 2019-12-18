@@ -41,6 +41,8 @@ int speedwagon = 1;
 uint8_t prev = 112;
 uint8_t data = 1;
 uint8_t default_data = 112;
+bool in_game = false;
+saves_t saves;
 
 void SystemClock_Config(void);
 
@@ -108,6 +110,10 @@ void print_menu(int meta, enum MENU_TYPE menu_type)
 		oled_WriteString(settings, Font_7x10, White);
 		break;
 	case LOAD:
+        sprintf(settings, "Name: < Save%d >", meta);
+        oled_SetCursor(0, 0);
+        oled_WriteString(settings, Font_7x10, White);
+        break;
 	case SAVE:
 	default:
 		oled_SetCursor(0, 0);
@@ -214,6 +220,18 @@ int get_new_position(int position, enum MENU_TYPE menu_type, enum KEY current_ke
 		}
 	case SETTINGS:
 		break;
+	case LOAD:
+        switch (current_key)
+        {
+            case FOUR:
+                position = position == 1 ? 1 : position - 1;
+            case SIX:
+                position = position == saves.current_saves_count ? saves.current_saves_count : position + 1;
+                break;
+            default:
+                break;
+        }
+	    break;
 	default:
 		return 0;
 	}
@@ -360,19 +378,63 @@ static void betta_game(field_t *field)
 	}
 }
 
+void copy_field(field_t* source, field_t* destination){
+    for (int i = 0; i < source->n; ++i)
+        for (int j = 0; j < source->m; ++j)
+            destination->plane[i][j] = source->plane[i][j];
+}
+
+static void process_save(field_t* field){
+    char string[50];
+    if (saves.current_saves_count == SAVES_COUNT){
+        sprintf(string, "limit exceeded.")
+        oled_SetCursor(0, 15);
+        oled_WriteString(string, Font_7x10, White);
+        oled_UpdateScreen();
+        return;
+    }
+    copy_field(field, saves.saves[saves.current_saves_count])
+    saves.current_saves_count++;
+    sprintf(string, "name: save%d", saves.current_saves_count + 1)
+    oled_SetCursor(0, 15);
+    oled_WriteString(string, Font_7x10, White);
+    oled_UpdateScreen();
+    HAL_Delay(1000);
+}
+
+static void process_load(field_t* field){
+    int position = 1;
+    while (1)
+    {
+        HAL_Delay(100);
+        print_menu(position, LOAD);
+        enum KEY current_key = get_key();
+
+        if (current_key == FIVE) {
+            copy_field(saves.saves[position - 1], field);
+            break;
+        }
+        position = get_new_position(position, LOAD, current_key);
+    }
+}
+
 static void process_menu_option(field_t *field, enum MENU_TYPE menu_type)
 {
 	switch (menu_type)
 	{
 	case MAIN:
 	case NEW_GAME:
+	    in_game = true;
 		init_field(field, HEIGHT, WIDTH);
 		set_start_field(field);
 		betta_game(field);
 		break;
 	case SAVE:
+	    process_save(field);
+	    break;
 		// мне максимально грустно
 	case LOAD:
+        process_load(field);
 		// мне максимально грустно
 	case SETTINGS:
 		process_settings();
