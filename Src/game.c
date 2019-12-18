@@ -69,3 +69,161 @@ void calc_step(field_t *field)
     }
     swap_planes(field);
 }
+
+void init_default_fields(saves_t* saves)
+{
+
+}
+
+void set_letter(char letter, field_t* field, int x, int y)
+{
+	switch(letter) {
+	case 'A':
+	case 'a':
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+2][x] = L_CELL;
+		field->plane[y+3][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y][x+1] = L_CELL;
+		field->plane[y+3][x+1] = L_CELL;
+
+		field->plane[y+1][x+2] = L_CELL;
+		field->plane[y+2][x+2] = L_CELL;
+		field->plane[y+3][x+2] = L_CELL;
+		field->plane[y+4][x+2] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+		break;
+	case 'E':
+	case 'e':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+2][x] = L_CELL;
+		field->plane[y+3][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y][x+1] = L_CELL;
+		field->plane[y+3][x+1] = L_CELL;
+		field->plane[y+5][x+1] = L_CELL;
+
+		field->plane[y][x+2] = L_CELL;
+		field->plane[y+1][x+2] = L_CELL;
+		field->plane[y+2][x+2] = L_CELL;
+		field->plane[y+3][x+2] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+
+
+		break;
+	case 'I':
+	case 'i':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y][x+1] = L_CELL;
+		field->plane[y+1][x+1] = L_CELL;
+		field->plane[y+2][x+1] = L_CELL;
+		field->plane[y+3][x+1] = L_CELL;
+		field->plane[y+4][x+1] = L_CELL;
+		field->plane[y+5][x+1] = L_CELL;
+
+		field->plane[y][x+2] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+		break;
+	case 'K':
+	case 'k':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+2][x] = L_CELL;
+		field->plane[y+3][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y+3][x+1] = L_CELL;
+
+		field->plane[y][x+2] = L_CELL;
+		field->plane[y+1][x+2] = L_CELL;
+		field->plane[y+2][x+2] = L_CELL;
+		field->plane[y+4][x+2] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+		break;
+	case 'L':
+	case 'l':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+2][x] = L_CELL;
+		field->plane[y+3][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y+5][x+1] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+		break;
+	case 'R':
+	case 'r':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+2][x] = L_CELL;
+		field->plane[y+3][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y][x+1] = L_CELL;
+		field->plane[y+3][x+1] = L_CELL;
+
+		field->plane[y+1][x+2] = L_CELL;
+		field->plane[y+2][x+2] = L_CELL;
+		field->plane[y+4][x+2] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+		break;
+	case 'T':
+	case 't':
+		field->plane[y][x] = L_CELL;
+
+		field->plane[y][x+1] = L_CELL;
+		field->plane[y+1][x+1] = L_CELL;
+		field->plane[y+2][x+1] = L_CELL;
+		field->plane[y+3][x+1] = L_CELL;
+		field->plane[y+4][x+1] = L_CELL;
+		field->plane[y+5][x+1] = L_CELL;
+
+		field->plane[y][x+2] = L_CELL;
+		break;
+	case 'U':
+	case 'u':
+	case 'V':
+	case 'v':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+2][x] = L_CELL;
+		field->plane[y+3][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+
+		field->plane[y+5][x+1] = L_CELL;
+
+		field->plane[y][x+2] = L_CELL;
+		field->plane[y+1][x+2] = L_CELL;
+		field->plane[y+2][x+2] = L_CELL;
+		field->plane[y+3][x+2] = L_CELL;
+		field->plane[y+4][x+2] = L_CELL;
+		break;
+	case 'X':
+	case 'x':
+		field->plane[y][x] = L_CELL;
+		field->plane[y+1][x] = L_CELL;
+		field->plane[y+4][x] = L_CELL;
+		field->plane[y+5][x] = L_CELL;
+
+		field->plane[y+2][x+1] = L_CELL;
+		field->plane[y+3][x+1] = L_CELL;
+
+		field->plane[y][x+2] = L_CELL;
+		field->plane[y+1][x+2] = L_CELL;
+		field->plane[y+4][x+2] = L_CELL;
+		field->plane[y+5][x+2] = L_CELL;
+		break;
+	}
+
+}
+

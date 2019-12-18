@@ -33,15 +33,13 @@
 #include "oled.h"
 #include "fonts.h"
 
-
-#define SAVES_COUNT 10
 // game speed (IT'S NOT TRUE, speed is ( 10 - speedwagon) % 10 )
 int speedwagon = 1;
 
 uint8_t prev = 112;
 uint8_t data = 1;
 uint8_t default_data = 112;
-bool in_game = false;
+int in_game = 0;
 saves_t saves;
 
 void SystemClock_Config(void);
@@ -121,11 +119,6 @@ void print_menu(int meta, enum MENU_TYPE menu_type)
 	}
 	oled_UpdateScreen();
 }
-
-typedef struct {
-    field_t[SAVES_COUNT] saves;
-    int current_saves_count;
-} saves_t;
 
 uint8_t read_symbol(uint8_t row)
 {
@@ -218,6 +211,7 @@ int get_new_position(int position, enum MENU_TYPE menu_type, enum KEY current_ke
 		default:
 			break;
 		}
+		break;
 	case SETTINGS:
 		break;
 	case LOAD:
@@ -225,6 +219,7 @@ int get_new_position(int position, enum MENU_TYPE menu_type, enum KEY current_ke
         {
             case FOUR:
                 position = position == 1 ? 1 : position - 1;
+                break;
             case SIX:
                 position = position == saves.current_saves_count ? saves.current_saves_count : position + 1;
                 break;
@@ -262,13 +257,32 @@ static void show_menu(field_t *field);
 //
 
 // todo: delete, just fill field for debug
-static void set_start_field(field_t *field)
+static void set_start_field()
 {
-	field->plane[1][4] = L_CELL;
-	field->plane[2][4] = L_CELL;
-	field->plane[3][4] = L_CELL;
-	field->plane[3][3] = L_CELL;
-	field->plane[2][2] = L_CELL;
+	field_t* buffer = &(saves.saves[0]);
+	set_letter('a', buffer, 0, 0);
+	set_letter('r', buffer, 5, 0);
+	set_letter('t', buffer, 10, 0);
+	set_letter('u', buffer, 15, 0);
+	set_letter('r', buffer, 20, 0);
+
+	buffer = &(saves.saves[1]);
+	set_letter('v', buffer, 0, 0);
+	set_letter('i', buffer, 4, 0);
+	set_letter('t', buffer, 8, 0);
+	set_letter('a', buffer, 12, 0);
+	set_letter('l', buffer, 16, 0);
+	set_letter('i', buffer, 20, 0);
+	set_letter('k', buffer, 24, 0);
+
+	buffer = &(saves.saves[2]);
+	set_letter('a', buffer, 0, 0);
+	set_letter('l', buffer, 4, 0);
+	set_letter('e', buffer, 8, 0);
+	set_letter('x', buffer, 12, 0);
+
+	saves.current_saves_count = 3;
+
 }
 
 // settings
@@ -316,16 +330,16 @@ static void get_position_on_field(int *x, int *y, enum KEY current_key)
 	switch (current_key)
 	{
 	case TWO:
-		*y = *y + HEIGHT - 1 % HEIGHT;
+		*y = (*y + HEIGHT - 1) % HEIGHT;
 		break;
 	case FOUR:
-		*x = *x + WIDTH - 1 % WIDTH;
+		*x = (*x + WIDTH - 1) % WIDTH;
 		break;
 	case SIX:
-		*x = *x + 1 % WIDTH;
+		*x = (*x + 1) % WIDTH;
 		break;
 	case EIGHT:
-		*y = *y + 1 % HEIGHT;
+		*y = (*y + 1) % HEIGHT;
 		break;
 	}
 }
@@ -334,15 +348,32 @@ static void process_pause(field_t *field)
 {
 	int x = 0;
 	int y = 0;
-
+	char buffer;
+	int cursor_counter = 0;
+	enum KEY prev;
+	enum KEY current_key;
 	while (1)
 	{
 		HAL_Delay(100);
-		print_field(field);
-		enum KEY current_key = get_key();
+		if (cursor_counter > 1)
+		{
+			buffer = field->plane[y][x];
+			field->plane[y][x] = '!';
+			print_field(field);
+			field->plane[y][x] = buffer;
+		}
+		else
+		{
+			print_field(field);
+		}
 
-		if (current_key == FIVE)
-			toggle_cell(field, x, y);
+		cursor_counter = (cursor_counter + 1) % 4;
+
+		prev = current_key;
+		current_key = get_key();
+
+		if (current_key == FIVE && prev != FIVE) toggle_cell(field, x, y);
+		if (current_key == THREE) return;
 		get_position_on_field(&x, &y, current_key);
 	}
 }
@@ -356,10 +387,10 @@ static void process_input(field_t *field)
 	{
 	case NONE:
 		return;
-	case SEVEN:
+	case ONE:
 		show_menu(field);
 		break;
-	case NINE:
+	case THREE:
 		process_pause(field);
 		break;
 	}
@@ -382,20 +413,32 @@ void copy_field(field_t* source, field_t* destination){
     for (int i = 0; i < source->n; ++i)
         for (int j = 0; j < source->m; ++j)
             destination->plane[i][j] = source->plane[i][j];
+    destination->m = source->m;
+    destination->n = source->n;
 }
 
 static void process_save(field_t* field){
+	oled_Fill(Black);
     char string[50];
-    if (saves.current_saves_count == SAVES_COUNT){
-        sprintf(string, "limit exceeded.")
+    if (!in_game){
+        sprintf(string, "game not found.");
         oled_SetCursor(0, 15);
         oled_WriteString(string, Font_7x10, White);
         oled_UpdateScreen();
+        HAL_Delay(1000);
         return;
     }
-    copy_field(field, saves.saves[saves.current_saves_count])
+    if (saves.current_saves_count == SAVES_COUNT){
+        sprintf(string, "limit exceeded.");
+        oled_SetCursor(0, 15);
+        oled_WriteString(string, Font_7x10, White);
+        oled_UpdateScreen();
+        HAL_Delay(1000);
+        return;
+    }
+    copy_field(field, &(saves.saves[saves.current_saves_count]));
     saves.current_saves_count++;
-    sprintf(string, "name: save%d", saves.current_saves_count + 1)
+    sprintf(string, "name: save%d", saves.current_saves_count);
     oled_SetCursor(0, 15);
     oled_WriteString(string, Font_7x10, White);
     oled_UpdateScreen();
@@ -411,7 +454,9 @@ static void process_load(field_t* field){
         enum KEY current_key = get_key();
 
         if (current_key == FIVE) {
-            copy_field(saves.saves[position - 1], field);
+            copy_field(&(saves.saves[position - 1]), field);
+            in_game = 1;
+            betta_game(field);
             break;
         }
         position = get_new_position(position, LOAD, current_key);
@@ -424,9 +469,8 @@ static void process_menu_option(field_t *field, enum MENU_TYPE menu_type)
 	{
 	case MAIN:
 	case NEW_GAME:
-	    in_game = true;
+	    in_game = 1;
 		init_field(field, HEIGHT, WIDTH);
-		set_start_field(field);
 		betta_game(field);
 		break;
 	case SAVE:
@@ -435,6 +479,7 @@ static void process_menu_option(field_t *field, enum MENU_TYPE menu_type)
 		// мне максимально грустно
 	case LOAD:
         process_load(field);
+        break;
 		// мне максимально грустно
 	case SETTINGS:
 		process_settings();
@@ -458,13 +503,17 @@ static void show_menu(field_t *field)
 			menu_type = get_menu_type(position);
 			process_menu_option(field, menu_type);
 		}
+		if (current_key == SEVEN) return;
 
 		position = get_new_position(position, MAIN, current_key);
 	}
 }
 
-void init_default_fields(saves_t* saves){
-    saves->saves[0]
+void clear_fields(){
+	int i = 0;
+	for (i = 0; i < 10; i++){
+		init_field(&(saves.saves[i]), HEIGHT, WIDTH);
+	}
 }
 
 int main(void)
@@ -508,13 +557,15 @@ int main(void)
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 
+	clear_fields();
+	set_start_field();
 	field_t field;
+	init_field(&field, field.n, field.m);
 	int i = 0;
 	while (1)
 	{
 		show_menu(&field);
-		set_start_field(&field);
-		betta_game(&field);
+		//set_start_field(&field);
 
 		/*
 		This is test of cursor.
