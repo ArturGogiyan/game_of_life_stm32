@@ -33,6 +33,8 @@
 #include "oled.h"
 #include "fonts.h"
 
+
+#define SAVES_COUNT 10
 // game speed (IT'S NOT TRUE, speed is ( 10 - speedwagon) % 10 )
 int speedwagon = 1;
 
@@ -113,6 +115,11 @@ void print_menu(int meta, enum MENU_TYPE menu_type)
 	}
 	oled_UpdateScreen();
 }
+
+typedef struct {
+    field_t[SAVES_COUNT] saves;
+    int current_saves_count;
+} saves_t;
 
 uint8_t read_symbol(uint8_t row)
 {
@@ -394,6 +401,10 @@ static void show_menu(field_t *field)
 	}
 }
 
+void init_default_fields(saves_t* saves){
+    saves->saves[0]
+}
+
 int main(void)
 {
 	/* USER CODE BEGIN 1 */
@@ -405,7 +416,8 @@ int main(void)
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
-
+	saves_t saves;
+	init_default_fields(&saves);
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
